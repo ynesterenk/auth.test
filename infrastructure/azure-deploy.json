@@ -1,0 +1,147 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "scriptContent": "[concat('az cognito user create --username ', parameters('UserName'), ' --password ', parameters('Password'), ' -g ', resourceGroup().name)]",
+        "arguments": "",
+        "retentionInterval": "P1D",
+        "timeout": "PT30M",
+        "cleanupPreference": "OnSuccess",
+        "containerSettings": {
+          "containerName": "script-output"
+        },
+        "environmentVariables": [
+          {
+            "name": "AZURE_RM_PARAM",
+            "value": "[parameters('AZURE_RM_PARAM')]"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service",
+      "apiVersion": "2021-01-01-preview",
+      "name": "[parameters('apiManagementServiceName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "capacity": "[parameters('skuCapacity')]"
+      },
+      "properties": {
+        "publisherEmail": "[parameters('publisherEmail')]",
+        "publisherName": "[parameters('publisherName')]"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2018-11-01",
+      "name": "[parameters('webAppName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2018-11-01",
+      "name": "[parameters('hostingPlanName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "capacity": "[parameters('skuCapacity')]"
+      },
+      "properties": {
+        "reserved": "[parameters('reserved')]"
+      }
+    },
+    {
+      "type": "Microsoft.Insights/logProfiles",
+      "apiVersion": "2016-03-01",
+      "name": "[parameters('logProfileName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "categories": [
+          "Write",
+          "Delete",
+          "Action"
+        ],
+        "locations": [
+          "global"
+        ],
+        "retentionPolicy": {
+          "enabled": true,
+          "days": 7
+        },
+        "storageAccountId": "[parameters('storageAccountId')]"
+      }
+    }
+  ],
+  "outputs": {
+    "userPoolId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', 'createUserPool')).outputs.userPoolId.value]"
+    },
+    "userPoolClientId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', 'createUserPool')).outputs.userPoolClientId.value]"
+    }
+  },
+  "parameters": {
+    "UserName": {
+      "type": "string",
+      "defaultValue": "authorization-service"
+    },
+    "Password": {
+      "type": "securestring"
+    },
+    "apiManagementServiceName": {
+      "type": "string",
+      "defaultValue": "auth-service-api"
+    },
+    "publisherEmail": {
+      "type": "string",
+      "defaultValue": "admin@authservice.com"
+    },
+    "publisherName": {
+      "type": "string",
+      "defaultValue": "Auth Service"
+    },
+    "webAppName": {
+      "type": "string",
+      "defaultValue": "authserviceapp"
+    },
+    "hostingPlanName": {
+      "type": "string",
+      "defaultValue": "authserviceplan"
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "S1"
+    },
+    "skuCapacity": {
+      "type": "int",
+      "defaultValue": 1
+    },
+    "reserved": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "logProfileName": {
+      "type": "string",
+      "defaultValue": "authservicelogs"
+    },
+    "storageAccountId": {
+      "type": "string",
+      "defaultValue": "[resourceId('Microsoft.Storage/storageAccounts', 'authservicestorage')]"
+    }
+  },
+  "variables": {}
+}
