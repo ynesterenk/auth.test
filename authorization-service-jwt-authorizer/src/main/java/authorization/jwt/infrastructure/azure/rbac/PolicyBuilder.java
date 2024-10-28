@@ -1,4 +1,4 @@
-package authorization.jwt.infrastructure.azure.iam;
+package authorization.jwt.infrastructure.azure.rbac;
 
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.authorization.models.RoleDefinition;

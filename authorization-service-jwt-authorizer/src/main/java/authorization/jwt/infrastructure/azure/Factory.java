@@ -1,14 +1,13 @@
 package authorization.jwt.infrastructure.azure;
-import authorization.jwt.infrastructure.azure.iam.AzureResourceManagerWrapper;
+import authorization.jwt.infrastructure.azure.rbac.AzureResourceManagerWrapper;
 import com.azure.core.credential.TokenCredential;
 import com.azure.core.management.AzureEnvironment;
 import com.azure.core.management.profile.AzureProfile;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.AzureResourceManager;
-import com.azure.resourcemanager.authorization.models.RoleDefinition;
 import authorization.jwt.core.Jwt;
 import authorization.jwt.core.PolicyRepository;
-import authorization.jwt.infrastructure.azure.iam.RolePolicyRepository;
+import authorization.jwt.infrastructure.azure.rbac.RolePolicyRepository;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.SecurityContext;

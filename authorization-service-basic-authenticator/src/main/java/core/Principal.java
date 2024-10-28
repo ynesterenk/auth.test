@@ -1,4 +1,4 @@
-package com.github.vitalibo.authorization.basic.core;
+package core;
 
 import lombok.Data;
 

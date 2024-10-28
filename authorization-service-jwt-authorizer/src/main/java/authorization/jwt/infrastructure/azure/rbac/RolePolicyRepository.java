@@ -1,10 +1,9 @@
-package authorization.jwt.infrastructure.azure.iam;
+package authorization.jwt.infrastructure.azure.rbac;
 
-import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.authorization.models.RoleDefinition;
 import authorization.jwt.core.Claims;
 import authorization.jwt.core.PolicyRepository;
-import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

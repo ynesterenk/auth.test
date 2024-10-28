@@ -1,7 +1,7 @@
 package jwt.infrastructure.azure.iam;
 
-import authorization.jwt.infrastructure.azure.iam.AzureResourceManagerWrapper;
-import authorization.jwt.infrastructure.azure.iam.RolePolicyRepository;
+import authorization.jwt.infrastructure.azure.rbac.AzureResourceManagerWrapper;
+import authorization.jwt.infrastructure.azure.rbac.RolePolicyRepository;
 import com.azure.resourcemanager.authorization.models.Permission;
 import com.azure.resourcemanager.authorization.models.RoleDefinition;
 import authorization.jwt.core.Claims;

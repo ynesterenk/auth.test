@@ -1,4 +1,4 @@
-package authorization.jwt.infrastructure.azure.lambda;
+package authorization.jwt.infrastructure.azure.functions;
 
 import authorization.jwt.core.Claims;
 import authorization.jwt.core.Jwt;
@@ -9,7 +9,6 @@ import com.azure.resourcemanager.authorization.models.RoleDefinition;
 import shared.infrastructure.azure.gateway.AuthorizerRequest;
 import shared.infrastructure.azure.gateway.AuthorizerResponse;
 import com.microsoft.azure.functions.ExecutionContext;
-import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
