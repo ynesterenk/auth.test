@@ -30,8 +30,8 @@ public class AzureADUserPoolTest {
 
     private AzureADUserPool azureAdUserPool;
 
-    private final String clientId = "client_id";
-    private final String clientSecret = "client_secret";
+    private final String clientId = System.getenv("AZURE_CLIENT_ID");
+    private final String clientSecret = System.getenv("AZURE_CLIENT_SECRET");
     private final String authority = "https://login.microsoftonline.com/your-tenant-id/";
 
     @BeforeMethod
