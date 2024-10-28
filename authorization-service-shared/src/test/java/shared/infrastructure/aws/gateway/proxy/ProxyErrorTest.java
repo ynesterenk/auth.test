@@ -1,10 +1,12 @@
-package com.github.vitalibo.authorization.shared.infrastructure.aws.gateway.proxy;
+package shared.infrastructure.aws.gateway.proxy;
 
-import com.github.vitalibo.authorization.shared.TestHelper;
-import com.github.vitalibo.authorization.shared.core.validation.ErrorState;
+import shared.TestHelper;
+import shared.core.validation.ErrorState;
 import org.apache.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import shared.infrastructure.azure.gateway.proxy.ProxyError;
+import shared.infrastructure.azure.gateway.proxy.ProxyResponse;
 
 import java.util.Arrays;
 

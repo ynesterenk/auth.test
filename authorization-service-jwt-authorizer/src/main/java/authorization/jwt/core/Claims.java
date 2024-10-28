@@ -1,4 +1,4 @@
-package com.github.vitalibo.authorization.jwt.core;
+package authorization.jwt.core;
 
 import lombok.Data;
 

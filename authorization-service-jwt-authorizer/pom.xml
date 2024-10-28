@@ -15,6 +15,36 @@
     <packaging>jar</packaging>
 
     <dependencies>
+  <dependency>
+    <groupId>com.azure.resourcemanager</groupId>
+    <artifactId>azure-resourcemanager-keyvault</artifactId>
+    <version>2.29.0</version> <!-- Or the latest version available -->
+ </dependency>
+        <dependency>
+    <groupId>com.azure.resourcemanager</groupId>
+    <artifactId>azure-resourcemanager</artifactId>
+    <version>2.29.0</version> <!-- Ensure you choose the correct version -->
+</dependency>
+<dependency>
+    <groupId>com.azure</groupId>
+    <artifactId>azure-security-keyvault-secrets</artifactId>
+    <version>4.7.0</version> <!-- Or the latest version available -->
+</dependency>
+    <dependency>
+        <groupId>com.azure</groupId>
+        <artifactId>azure-identity</artifactId>
+        <version>1.5.3</version> 
+      </dependency>
+   <dependency>
+        <groupId>com.azure.resourcemanager</groupId>
+        <artifactId>azure-resourcemanager-cognitiveservices</artifactId>
+        <version>1.1.0-beta.1</version> <!-- Use the latest version if available -->
+   </dependency>
+        <dependency>
+    <groupId>com.microsoft.azure.functions</groupId>
+    <artifactId>azure-functions-java-library</artifactId>
+    <version>3.1.0</version> <!-- Or the latest version -->
+</dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-core</artifactId>
@@ -26,6 +56,11 @@
         <dependency>
             <groupId>com.github.vitalibo</groupId>
             <artifactId>authorization-service-shared</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.vitalibo</groupId>
+            <artifactId>authorization-service-basic-authenticator</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -53,5 +88,9 @@
             <artifactId>mockito-core</artifactId>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+        </plugins>
+    </build>
 
 </project>

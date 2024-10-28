@@ -1,28 +1,25 @@
-package com.github.vitalibo.authorization.basic.infrastructure.aws;
+package com.github.vitalibo.authorization.basic.infrastructure.azure;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
-import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient;
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.resourcemanager.cognitiveservices.CognitiveServicesManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-class AmazonFactory {
+class AzureFactory {
 
-    private final Regions region;
-    private final AWSCredentialsProvider credentials;
+    private final CognitiveServicesManager cognitiveServicesManager;
 
     @Getter(lazy = true)
-    private final AWSCognitoIdentityProvider awsCognitoIdentityProvider =
-        AWSCognitoIdentityProviderClient.builder()
-            .withRegion(region)
-            .withCredentials(credentials)
-            .build();
+    private final CognitiveServicesManager azureCognitiveServicesManager =
+        CognitiveServicesManager.configure()
+            .withHttpClient(new NettyAsyncHttpClientBuilder().build())
+            .authenticate(new DefaultAzureCredentialBuilder().build(), new AzureProfile(AzureEnvironment.AZURE));
 
-    AmazonFactory(String region) {
-        this(Regions.fromName(region), new DefaultAWSCredentialsProviderChain());
+    AzureFactory() {
+        this.cognitiveServicesManager = CognitiveServicesManager.configure()
+            .withHttpClient(new NettyAsyncHttpClientBuilder().build())
+            .authenticate(new DefaultAzureCredentialBuilder().build(), new AzureProfile(AzureEnvironment.AZURE));
     }
 
 }

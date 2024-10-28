@@ -1,18 +1,16 @@
-package com.github.vitalibo.authorization.basic.infrastructure.aws.lambda;
+package com.github.vitalibo.authorization.basic.infrastructure.azure.functions;
 
-import com.amazonaws.auth.policy.Policy;
-import com.amazonaws.auth.policy.Resource;
-import com.amazonaws.auth.policy.Statement;
-import com.amazonaws.services.cognitoidp.model.NotAuthorizedException;
-import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.resourcemanager.AzureResourceManager;
+import com.azure.resourcemanager.resources.models.ResourceGroup;
 import com.github.vitalibo.authorization.basic.core.HttpBasicAuthenticator;
 import com.github.vitalibo.authorization.basic.core.Principal;
-import com.github.vitalibo.authorization.basic.infrastructure.aws.Factory;
+import com.github.vitalibo.authorization.basic.infrastructure.azure.Factory;
 import com.github.vitalibo.authorization.shared.core.http.BasicAuthenticationException;
-import com.github.vitalibo.authorization.shared.infrastructure.aws.gateway.AuthorizerRequest;
-import com.github.vitalibo.authorization.shared.infrastructure.aws.gateway.AuthorizerResponse;
+import com.github.vitalibo.authorization.shared.infrastructure.azure.gateway.AuthorizerRequest;
+import com.github.vitalibo.authorization.shared.infrastructure.azure.gateway.AuthorizerResponse;
+import com.microsoft.azure.functions.*;
+import com.microsoft.azure.functions.annotation.*;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class AuthorizerRequestHandler implements RequestHandler<AuthorizerRequest, AuthorizerResponse> {
+public class AuthorizerRequestHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthorizerRequestHandler.class);
 
@@ -31,8 +29,10 @@ public class AuthorizerRequestHandler implements RequestHandler<AuthorizerReques
         this(Factory.getInstance());
     }
 
-    @Override
-    public AuthorizerResponse handleRequest(AuthorizerRequest request, Context context) {
+    @FunctionName("AuthorizerRequestHandler")
+    public HttpResponseMessage handleRequest(
+            @HttpTrigger(name = "req", methods = {HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION) AuthorizerRequest request,
+            final ExecutionContext context) {
         Statement.Effect effect = Statement.Effect.Deny;
         HttpBasicAuthenticator authenticator = factory.createHttpBasicAuthenticator();
 
@@ -43,14 +43,12 @@ public class AuthorizerRequestHandler implements RequestHandler<AuthorizerReques
             effect = Statement.Effect.Allow;
         } catch (BasicAuthenticationException e) {
             logger.warn("Validation error. {}", e.getMessage());
-        } catch (UserNotFoundException | NotAuthorizedException e) {
-            logger.warn("AWS Cognito error. {}", e.getErrorMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;
         }
 
-        return new AuthorizerResponse.Builder()
+        AuthorizerResponse response = new AuthorizerResponse.Builder()
             .withPrincipalId(principal.getId())
             .withPolicyDocument(new Policy()
                 .withStatements(new Statement(effect)
@@ -61,6 +59,8 @@ public class AuthorizerRequestHandler implements RequestHandler<AuthorizerReques
                 .map(o -> o.stream().collect(Collectors.joining(","))).orElse(null))
             .withContextAsNumber("expirationTime", principal.getExpirationTime())
             .build();
+
+        return request.createResponseBuilder(HttpStatus.OK).body(response).build();
     }
 
 }

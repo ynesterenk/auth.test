@@ -1,20 +1,27 @@
-package com.github.vitalibo.authorization.server.core.translator;
+package server.core.translator;
 
-import com.github.vitalibo.authorization.server.core.model.ChangePasswordRequest;
-import com.github.vitalibo.authorization.shared.infrastructure.aws.gateway.proxy.ProxyRequest;
-import org.apache.http.HttpHeaders;
+import authorization.server.core.model.ChangePasswordRequest;
+import authorization.server.core.translator.ChangePasswordRequestTranslator;
+import shared.infrastructure.azure.gateway.proxy.HttpRequestTranslator;
+import shared.infrastructure.azure.gateway.proxy.HttpHeaders;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Optional;
+
+import static server.TestHelper.makeHttpRequestTranslator;
 
 public class ChangePasswordRequestTranslatorTest {
 
     @Test
-    public void testTranslate() {
-        ProxyRequest request = makeProxyRequest(
-            "username=admin&previous_password=Welcome2017!&proposed_password=Aq1Sw2De3");
+    public void testTranslate()  throws UnsupportedEncodingException {
+        HttpRequestTranslator request = makeHttpRequestTranslator(
+                "username=admin&previous_password=Welcome2017!&proposed_password=Aq1Sw2De3");
 
         ChangePasswordRequest actual = ChangePasswordRequestTranslator.from(request);
 
@@ -25,8 +32,8 @@ public class ChangePasswordRequestTranslatorTest {
     }
 
     @Test
-    public void testTranslateEmpty() {
-        ProxyRequest request = makeProxyRequest("");
+    public void testTranslateEmpty()  throws UnsupportedEncodingException {
+        HttpRequestTranslator request = makeHttpRequestTranslator("");
 
         ChangePasswordRequest actual = ChangePasswordRequestTranslator.from(request);
 
@@ -34,12 +41,5 @@ public class ChangePasswordRequestTranslatorTest {
         Assert.assertEquals(actual, new ChangePasswordRequest());
     }
 
-    private static ProxyRequest makeProxyRequest(String body) {
-        ProxyRequest request = new ProxyRequest();
-        request.setHeaders(new HashMap<>(Collections.singletonMap(
-            HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded; charset=UTF-8")));
-        request.setBody(body);
-        return request;
-    }
 
 }

@@ -1,14 +1,18 @@
-package com.github.vitalibo.authorization.basic.infrastructure.aws.lambda;
+package com.github.vitalibo.authorization.basic.infrastructure.azure.functions;
 
-import com.amazonaws.services.cognitoidp.model.NotAuthorizedException;
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.util.json.Jackson;
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.resourcemanager.AzureResourceManager;
+import com.azure.resourcemanager.resources.models.ResourceGroup;
 import com.github.vitalibo.authorization.basic.core.HttpBasicAuthenticator;
 import com.github.vitalibo.authorization.basic.core.Principal;
-import com.github.vitalibo.authorization.basic.infrastructure.aws.Factory;
+import com.github.vitalibo.authorization.basic.infrastructure.azure.Factory;
 import com.github.vitalibo.authorization.shared.core.http.BasicAuthenticationException;
-import com.github.vitalibo.authorization.shared.infrastructure.aws.gateway.AuthorizerRequest;
-import com.github.vitalibo.authorization.shared.infrastructure.aws.gateway.AuthorizerResponse;
+import com.github.vitalibo.authorization.shared.infrastructure.azure.gateway.AuthorizerRequest;
+import com.github.vitalibo.authorization.shared.infrastructure.azure.gateway.AuthorizerResponse;
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import com.microsoft.azure.functions.HttpResponseMessage;
+import com.microsoft.azure.functions.HttpStatus;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -25,9 +29,11 @@ public class AuthorizerRequestHandlerTest {
     @Mock
     private HttpBasicAuthenticator mockHttpBasicAuthenticator;
     @Mock
-    private Context mockContext;
+    private HttpRequestMessage<AuthorizerRequest> mockRequest;
+    @Mock
+    private ExecutionContext mockContext;
 
-    private AuthorizerRequestHandler lambda;
+    private AuthorizerRequestHandler handler;
     private AuthorizerRequest request;
     private Principal principal;
 
@@ -35,7 +41,7 @@ public class AuthorizerRequestHandlerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Mockito.when(mockFactory.createHttpBasicAuthenticator()).thenReturn(mockHttpBasicAuthenticator);
-        lambda = new AuthorizerRequestHandler(mockFactory);
+        handler = new AuthorizerRequestHandler(mockFactory);
         request = makeRequest();
         principal = makePrincipal();
     }
@@ -44,12 +50,15 @@ public class AuthorizerRequestHandlerTest {
     public void testAuthentication() {
         Mockito.when(mockHttpBasicAuthenticator.authenticate(Mockito.any()))
             .thenReturn(principal);
+        Mockito.when(mockRequest.getBody()).thenReturn(request);
 
-        AuthorizerResponse actual = lambda.handleRequest(request, mockContext);
+        HttpResponseMessage response = handler.handleRequest(mockRequest, mockContext);
 
-        Assert.assertNotNull(actual);
+        Assert.assertNotNull(response);
+        Assert.assertEquals(response.getStatus(), HttpStatus.OK);
+        AuthorizerResponse actual = (AuthorizerResponse) response.getBody();
         Assert.assertEquals(actual.getPrincipalId(), principal.getId());
-        Assert.assertTrue(Jackson.toJsonString(actual.getPolicyDocument()).contains("Allow"));
+        Assert.assertTrue(actual.getPolicyDocument().toJson().contains("Allow"));
         Assert.assertEquals(actual.getContext().get("username"), principal.getUsername());
         Assert.assertEquals(actual.getContext().get("scope"), "foo,bar");
         Assert.assertEquals(actual.getContext().get("expirationTime"), 1234567890L);
@@ -58,13 +67,16 @@ public class AuthorizerRequestHandlerTest {
     @Test
     public void testUnauthorized() {
         Mockito.when(mockHttpBasicAuthenticator.authenticate(Mockito.any()))
-            .thenThrow(NotAuthorizedException.class);
+            .thenThrow(BasicAuthenticationException.class);
+        Mockito.when(mockRequest.getBody()).thenReturn(request);
 
-        AuthorizerResponse actual = lambda.handleRequest(request, mockContext);
+        HttpResponseMessage response = handler.handleRequest(mockRequest, mockContext);
 
-        Assert.assertNotNull(actual);
+        Assert.assertNotNull(response);
+        Assert.assertEquals(response.getStatus(), HttpStatus.OK);
+        AuthorizerResponse actual = (AuthorizerResponse) response.getBody();
         Assert.assertEquals(actual.getPrincipalId(), null);
-        Assert.assertTrue(Jackson.toJsonString(actual.getPolicyDocument()).contains("Deny"));
+        Assert.assertTrue(actual.getPolicyDocument().toJson().contains("Deny"));
         Assert.assertEquals(actual.getContext().get("username"), null);
         Assert.assertEquals(actual.getContext().get("scope"), null);
         Assert.assertEquals(actual.getContext().get("expirationTime"), null);
@@ -74,12 +86,15 @@ public class AuthorizerRequestHandlerTest {
     public void testValidationError() {
         Mockito.when(mockHttpBasicAuthenticator.authenticate(Mockito.any()))
             .thenThrow(BasicAuthenticationException.class);
+        Mockito.when(mockRequest.getBody()).thenReturn(request);
 
-        AuthorizerResponse actual = lambda.handleRequest(request, mockContext);
+        HttpResponseMessage response = handler.handleRequest(mockRequest, mockContext);
 
-        Assert.assertNotNull(actual);
+        Assert.assertNotNull(response);
+        Assert.assertEquals(response.getStatus(), HttpStatus.OK);
+        AuthorizerResponse actual = (AuthorizerResponse) response.getBody();
         Assert.assertEquals(actual.getPrincipalId(), null);
-        Assert.assertTrue(Jackson.toJsonString(actual.getPolicyDocument()).contains("Deny"));
+        Assert.assertTrue(actual.getPolicyDocument().toJson().contains("Deny"));
         Assert.assertEquals(actual.getContext().get("username"), null);
         Assert.assertEquals(actual.getContext().get("scope"), null);
         Assert.assertEquals(actual.getContext().get("expirationTime"), null);
@@ -88,14 +103,15 @@ public class AuthorizerRequestHandlerTest {
     @Test(expectedExceptions = Exception.class)
     public void testInternalServerError() {
         Mockito.when(mockHttpBasicAuthenticator.authenticate(Mockito.any()))
-            .thenThrow(Exception.class);
+            .thenThrow(RuntimeException.class);
+        Mockito.when(mockRequest.getBody()).thenReturn(request);
 
-        lambda.handleRequest(request, mockContext);
+        handler.handleRequest(mockRequest, mockContext);
     }
 
     private static AuthorizerRequest makeRequest() {
         AuthorizerRequest request = new AuthorizerRequest();
-        request.setMethodArn("arn:aws:::*");
+        request.setMethodArn("arn:aws:::");
         request.setAuthorizationToken("Basic dXNlcjpwYXNzd29yZA==");
         return request;
     }
@@ -103,7 +119,7 @@ public class AuthorizerRequestHandlerTest {
     private static Principal makePrincipal() {
         Principal principal = new Principal();
         principal.setId("32944624-1f4a-4f34-bdf6-5450679ef1bf");
-        principal.setId("admin");
+        principal.setUsername("admin");
         principal.setScope(Arrays.asList("foo", "bar"));
         principal.setExpirationTime(1234567890L);
         return principal;

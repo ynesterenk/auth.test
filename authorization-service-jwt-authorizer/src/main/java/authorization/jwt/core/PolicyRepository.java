@@ -1,9 +1,12 @@
-package com.github.vitalibo.authorization.jwt.core;
+package authorization.jwt.core;
 
-import com.amazonaws.auth.policy.Policy;
+import com.azure.resourcemanager.authorization.models.RoleDefinition;
+
+import java.util.List;
 
 public interface PolicyRepository {
 
-    Policy getPolicy(Claims claims);
+    // Returns a list of Azure Role Definitions (permissions) based on JWT claims
+    List<RoleDefinition> getRoleDefinitions(Claims claims);
 
 }

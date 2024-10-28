@@ -1,6 +1,6 @@
-package com.github.vitalibo.authorization.jwt.core;
+package authorization.jwt.core;
 
-import com.github.vitalibo.authorization.shared.core.AuthorizationServiceException;
+import shared.core.AuthorizationServiceException;
 
 public class JwtVerificationException extends AuthorizationServiceException {
 

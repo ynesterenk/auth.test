@@ -1,24 +1,32 @@
-package com.github.vitalibo.authorization.server.core;
+package server.core;
 
-import com.github.vitalibo.authorization.shared.infrastructure.aws.gateway.proxy.ProxyRequest;
+import authorization.server.core.Route;
+import authorization.server.core.Router;
+import com.microsoft.azure.functions.HttpMethod;
+import shared.infrastructure.azure.gateway.proxy.HttpRequestTranslator;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import java.net.URI;
+
+import java.util.Optional;
 
 public class RouterTest {
 
     @DataProvider
     public Object[][] samplesNotFound() {
         return new Object[][]{
-            {sample("/", "GET")},
-            {sample("/oauth/token", "GET")},
-            {sample("/oauth/tokens", "POST")},
-            {sample("/account", "PUT")}
+                {sample("/", "GET")},
+                {sample("/oauth/token", "GET")},
+                {sample("/oauth/tokens", "POST")},
+                {sample("/account", "PUT")}
         };
     }
 
     @Test(dataProvider = "samplesNotFound")
-    public void testMatchNotFound(ProxyRequest request) {
+    public void testMatchNotFound(HttpRequestTranslator request) {
         Route actual = Router.match(request);
 
         Assert.assertNotNull(actual);
@@ -27,7 +35,7 @@ public class RouterTest {
 
     @Test
     public void testMatchOAuth2Facade() {
-        ProxyRequest request = sample("/oauth/token", "POST");
+        HttpRequestTranslator request = sample("/oauth/token", "POST");
 
         Route actual = Router.match(request);
 
@@ -38,13 +46,13 @@ public class RouterTest {
     @DataProvider
     public Object[][] samplesHttpMethod() {
         return new Object[][]{
-            {"GET"}, {"POST"}
+                {"GET"}, {"POST"}
         };
     }
 
     @Test(dataProvider = "samplesHttpMethod")
     public void testMatchChangePassword(String httpMethod) {
-        ProxyRequest request = sample("/account", httpMethod);
+        HttpRequestTranslator request = sample("/account", httpMethod);
 
         Route actual = Router.match(request);
 
@@ -52,11 +60,14 @@ public class RouterTest {
         Assert.assertEquals(actual, Route.CHANGE_PASSWORD);
     }
 
-    private static ProxyRequest sample(String path, String httpMethod) {
-        ProxyRequest request = new ProxyRequest();
-        request.setPath(path);
-        request.setHttpMethod(httpMethod);
-        return request;
-    }
+    private static HttpRequestTranslator sample(String path, String httpMethod) {
+        // Mock HttpRequestMessage to create an HttpRequestTranslator
+        HttpRequestMessage<Optional<String>> mockRequest = Mockito.mock(HttpRequestMessage.class);
 
+        // Set path and method for the request
+        Mockito.when(mockRequest.getUri()).thenReturn(URI.create(path));
+        Mockito.when(mockRequest.getHttpMethod()).thenReturn(HttpMethod.valueOf(httpMethod));
+        Mockito.when(mockRequest.getBody()).thenReturn(Optional.of(""));
+        return new HttpRequestTranslator(mockRequest);
+    }
 }

@@ -1,15 +1,25 @@
-package com.github.vitalibo.authorization.server.core;
+package server.core;
 
-import com.github.vitalibo.authorization.server.core.model.ChangePasswordRequest;
-import com.github.vitalibo.authorization.server.core.model.ClientCredentialsRequest;
-import com.github.vitalibo.authorization.shared.core.validation.ErrorState;
-import com.github.vitalibo.authorization.shared.infrastructure.aws.gateway.proxy.ProxyRequest;
+import authorization.server.core.ValidationRules;
+import authorization.server.core.model.ChangePasswordRequest;
+import authorization.server.core.model.ClientCredentialsRequest;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import shared.core.validation.ErrorState;
+import shared.infrastructure.azure.gateway.proxy.HttpRequestTranslator;
+import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import server.TestHelper;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+
+import static server.TestHelper.makeHttpRequestTranslator;
+import static server.TestHelper.makeHttpRequestTranslatorWithHeaders;
+
 
 public class ValidationRulesTest {
 
@@ -22,8 +32,7 @@ public class ValidationRulesTest {
 
     @Test
     public void testPassVerifyBody() {
-        ProxyRequest request = new ProxyRequest();
-        request.setBody("{}");
+        HttpRequestTranslator request = makeHttpRequestTranslator("{}");
 
         ValidationRules.verifyBody(request, errorState);
 
@@ -37,8 +46,7 @@ public class ValidationRulesTest {
 
     @Test(dataProvider = "samples")
     public void testFailVerifyBody(String body) {
-        ProxyRequest request = new ProxyRequest();
-        request.setBody(body);
+        HttpRequestTranslator request = makeHttpRequestTranslator(body);
 
         ValidationRules.verifyBody(request, errorState);
 
@@ -49,14 +57,14 @@ public class ValidationRulesTest {
     @DataProvider
     public Object[][] samplesBasicAuthenticationHeader() {
         return new Object[][]{
-            {null}, {""}, {"Basic aHR0cHdhdGNoOmY="}
+                {null}, {""}, {"Basic aHR0cHdhdGNoOmY="}
         };
     }
 
     @Test(dataProvider = "samplesBasicAuthenticationHeader")
     public void testPassVerifyBasicAuthenticationHeader(String header) {
-        ProxyRequest request = new ProxyRequest();
-        request.setHeaders(Collections.singletonMap("Authorization", header));
+        Map<String, String> headers = Collections.singletonMap("Authorization", header);
+        HttpRequestTranslator request = makeHttpRequestTranslatorWithHeaders("{}", headers);
 
         ValidationRules.verifyBasicAuthenticationHeader(request, errorState);
 
@@ -65,9 +73,8 @@ public class ValidationRulesTest {
 
     @Test
     public void testFailVerifyBasicAuthenticationHeader() {
-        ProxyRequest request = new ProxyRequest();
-        request.setHeaders(Collections.singletonMap(
-            "Authorization", "incorrect value"));
+        Map<String, String> headers = Collections.singletonMap("Authorization", "incorrect value");
+        HttpRequestTranslator request = makeHttpRequestTranslatorWithHeaders("{}", headers);
 
         ValidationRules.verifyBasicAuthenticationHeader(request, errorState);
 
@@ -88,7 +95,7 @@ public class ValidationRulesTest {
     @DataProvider
     public Object[][] samplesIncorrectGrantType() {
         return new Object[][]{
-            {null}, {""}, {"refresh_token"}, {"incorrect value"}
+                {null}, {""}, {"refresh_token"}, {"incorrect value"}
         };
     }
 
@@ -208,5 +215,16 @@ public class ValidationRulesTest {
         Assert.assertNotNull(errorState.get("proposed_password"));
     }
 
+    private static HttpRequestTranslator makeHttpRequestTranslator(String body) {
+        HttpRequestMessage<Optional<String>> mockRequest = Mockito.mock(HttpRequestMessage.class);
+        Mockito.when(mockRequest.getBody()).thenReturn(Optional.ofNullable(body));
+        return new HttpRequestTranslator(mockRequest);
+    }
 
+    private static HttpRequestTranslator makeHttpRequestTranslatorWithHeaders(String body, Map<String, String> headers) {
+        HttpRequestMessage<Optional<String>> mockRequest = Mockito.mock(HttpRequestMessage.class);
+        Mockito.when(mockRequest.getBody()).thenReturn(Optional.ofNullable(body));
+        Mockito.when(mockRequest.getHeaders()).thenReturn(headers);
+        return new HttpRequestTranslator(mockRequest);
+    }
 }

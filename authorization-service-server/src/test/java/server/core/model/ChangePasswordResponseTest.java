@@ -1,7 +1,8 @@
-package com.github.vitalibo.authorization.server.core.model;
+package server.core.model;
 
+import authorization.server.core.model.ChangePasswordResponse;
 import com.amazonaws.util.json.Jackson;
-import com.github.vitalibo.authorization.server.TestHelper;
+import server.TestHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

@@ -3,24 +3,25 @@
 set -e
 
 if [ $# -ne 2 ]; then
-  echo "Usage: $0 [user-name] [deployment-bucket]"
+  echo "Usage: $0 [user-name] [resource-group]"
   echo ''
   echo 'Options:'
-  echo '  user-name          User name'
-  echo '  deployment-bucket  S3 bucket name where contains compiled lambdas'
+  echo '  user-name        User name'
+  echo '  resource-group   Azure resource group name'
   exit 1
 fi
 
 USER=$1
-S3_BUCKET=$2
-STACK_NAME="${USER}-infrastructure"
+RESOURCE_GROUP=$2
+TEMPLATE_FILE='azure-deploy.json'
 BUILD=`date -u +%Y-%m-%dT%H:%M:%SZ`
 
 echo 'Create/Update stack initialized'
 for MODULE in 'server' 'basic-authenticator' 'jwt-authorizer'; do
-  aws s3 cp "../authorization-service-${MODULE}/target/authorization-service-${MODULE}-1.0-SNAPSHOT.jar" \
-    "s3://${S3_BUCKET}/${USER}/${BUILD}/"
+  az storage blob upload --account-name ${STORAGE_ACCOUNT_NAME} --container-name ${USER} \
+    --name ${BUILD}/authorization-service-${MODULE}-1.0-SNAPSHOT.jar \
+    --file "../authorization-service-${MODULE}/target/authorization-service-${MODULE}-1.0-SNAPSHOT.jar"
 done
 
-aws cloudformation deploy --template-file 'stack.json' --stack-name ${STACK_NAME} \
-  --parameter-overrides UserName=${USER} DeploymentBucket=${S3_BUCKET} Build=${BUILD}
+az deployment group create --resource-group ${RESOURCE_GROUP} --template-file ${TEMPLATE_FILE} \
+  --parameters UserName=${USER} Build=${BUILD}

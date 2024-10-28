@@ -1,7 +1,9 @@
-package com.github.vitalibo.authorization.shared.core.http;
+package shared.core.http;
 
 import com.amazonaws.util.json.Jackson;
-import com.github.vitalibo.authorization.shared.infrastructure.aws.gateway.proxy.ProxyRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import shared.infrastructure.azure.gateway.proxy.HttpRequestTranslator;
+import shared.infrastructure.azure.gateway.proxy.ProxyRequest;
 import lombok.SneakyThrows;
 import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
@@ -17,6 +19,30 @@ public class FormUrlencodedScheme {
         super();
     }
 
+    public static HttpRequestTranslator decode(HttpRequestTranslator request) {
+        Map<String, String> headers = request.getHeaders();
+        String contentType = headers.get(HttpHeaders.CONTENT_TYPE);
+
+        // Check if content type is application/x-www-form-urlencoded
+        if (contentType == null || !contentType.contains("application/x-www-form-urlencoded")) {
+            return request;
+        }
+
+        // Decode the form-urlencoded body to JSON
+        String decodedBody;
+        try {
+            Map<String, String> decodedParams = decode(request.getBody(), headers);
+            decodedBody = new ObjectMapper().writeValueAsString(decodedParams);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to decode form-urlencoded body", e);
+        }
+
+        // Create a new HttpRequestTranslator with the JSON body and updated content type
+        HttpRequestTranslator modifiedRequest = request.withUpdatedBody(decodedBody);
+        modifiedRequest.getHeaders().put(HttpHeaders.CONTENT_TYPE, "application/json");
+        return modifiedRequest;
+    }
+
     public static ProxyRequest decode(ProxyRequest request) {
         Map<String, String> headers = request.getHeaders();
         String contentType = headers.get(HttpHeaders.CONTENT_TYPE);
@@ -29,6 +55,7 @@ public class FormUrlencodedScheme {
         headers.put(HttpHeaders.CONTENT_TYPE, "application/json");
         return request;
     }
+
 
     @SneakyThrows
     public static Map<String, String> decode(String body, Map<String, String> headers) {

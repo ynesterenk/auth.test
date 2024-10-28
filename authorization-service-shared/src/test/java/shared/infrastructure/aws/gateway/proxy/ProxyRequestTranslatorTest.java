@@ -1,9 +1,11 @@
-package com.github.vitalibo.authorization.shared.infrastructure.aws.gateway.proxy;
+package shared.infrastructure.aws.gateway.proxy;
 
 import com.amazonaws.util.json.Jackson;
-import com.github.vitalibo.authorization.shared.TestHelper;
+import shared.TestHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import shared.infrastructure.azure.gateway.proxy.ProxyRequest;
+import shared.infrastructure.azure.gateway.proxy.ProxyRequestTranslator;
 
 import java.util.Map;
 

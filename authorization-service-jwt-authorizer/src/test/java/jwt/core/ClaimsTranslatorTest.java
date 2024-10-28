@@ -1,5 +1,7 @@
-package com.github.vitalibo.authorization.jwt.core;
+package jwt.core;
 
+import authorization.jwt.core.Claims;
+import authorization.jwt.core.ClaimsTranslator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.testng.Assert;
 import org.testng.annotations.Test;
