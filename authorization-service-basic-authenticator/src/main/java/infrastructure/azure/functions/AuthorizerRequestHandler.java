@@ -28,6 +28,10 @@ public class AuthorizerRequestHandler {
         this.factory = AzureFactory.getInstance();
     }
 
+    public AuthorizerRequestHandler(AzureFactory mockFactory) {
+        this.factory = mockFactory;
+    }
+
     @FunctionName("AuthorizerRequestHandler")
     public HttpResponseMessage run(
             @HttpTrigger(name = "req", methods = {HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION)

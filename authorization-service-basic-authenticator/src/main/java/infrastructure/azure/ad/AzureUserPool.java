@@ -1,7 +1,13 @@
 package infrastructure.azure.ad;
 
+import com.azure.core.credential.AccessToken;
+import com.azure.core.credential.TokenRequestContext;
 import com.azure.identity.ClientSecretCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
+import com.azure.identity.UsernamePasswordCredential;
+import com.azure.identity.UsernamePasswordCredentialBuilder;
+import com.azure.security.keyvault.secrets.SecretClient;
+import com.azure.security.keyvault.secrets.SecretClientBuilder;
 import core.UserPool;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,16 +31,29 @@ public class AzureUserPool implements UserPool {
 
         // Implement authentication with Azure AD using `ClientSecretCredential`
         // Create request with Azure AD endpoint for token retrieval
-        String token = authenticateWithAzureAd(username, password);
+        String token = authenticateWithAzureAd(username, password, clientId);
 
         return token;
     }
 
-    private String authenticateWithAzureAd(String username, String password) {
-        // Azure AD Authentication Logic with provided username/password
-        // This typically involves calling the MS Graph API for token generation
-        // Here, you would construct and send a request for the token and parse the response
+    private String authenticateWithAzureAd(String username, String password, String appClientId) {
+        // Create a UsernamePasswordCredential using the helper method
+        UsernamePasswordCredential usernamePasswordCredential = createUsernamePasswordCredential(username, password, appClientId);
+       // Define the scope for the token (example: Azure Key Vault scope)
+        TokenRequestContext tokenRequestContext = new TokenRequestContext()
+                .addScopes("https://vault.azure.net/.default");
 
-        return "azure-ad-id-token"; // placeholder for token
+        // Retrieve the token
+        AccessToken accessToken = usernamePasswordCredential.getToken(tokenRequestContext).block();
+        return accessToken.getToken();
+    }
+
+    // Helper method to create a UsernamePasswordCredential
+    protected UsernamePasswordCredential createUsernamePasswordCredential(String username, String password, String clientId) {
+        return new UsernamePasswordCredentialBuilder()
+                .clientId(clientId)
+                .username(username)
+                .password(password)
+                .build();
     }
 }

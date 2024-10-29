@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-class AzureAdClientFactory {
+public class AzureAdClientFactory {
 
     private final String tenantId;
     private final String clientId;
@@ -20,10 +20,16 @@ class AzureAdClientFactory {
     }
 
     private ClientSecretCredential createClientSecretCredential() {
-        return new ClientSecretCredentialBuilder()
+        // Use the helper method to get a new ClientSecretCredentialBuilder
+        return createClientSecretCredentialBuilder()
                 .tenantId(tenantId)
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .build();
+    }
+
+    // Helper method to create a ClientSecretCredentialBuilder
+    protected ClientSecretCredentialBuilder createClientSecretCredentialBuilder() {
+        return new ClientSecretCredentialBuilder();
     }
 }

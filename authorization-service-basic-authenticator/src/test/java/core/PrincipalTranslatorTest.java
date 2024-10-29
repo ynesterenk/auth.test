@@ -13,7 +13,7 @@ public class PrincipalTranslatorTest {
     @Test
     public void testFrom() {
         String sample = new BufferedReader(new InputStreamReader(
-            PrincipalTranslatorTest.class.getResourceAsStream("/CognitoAccessKey.jwt")))
+            PrincipalTranslatorTest.class.getResourceAsStream("/AzureAccessToken")))
             .lines().collect(Collectors.joining());
 
         Principal actual = PrincipalTranslator.from(sample);
