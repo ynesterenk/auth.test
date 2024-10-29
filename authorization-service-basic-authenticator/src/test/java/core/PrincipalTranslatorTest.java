@@ -13,7 +13,7 @@ public class PrincipalTranslatorTest {
     @Test
     public void testFrom() {
         String sample = new BufferedReader(new InputStreamReader(
-            PrincipalTranslatorTest.class.getResourceAsStream("/AzureAccessToken")))
+            PrincipalTranslatorTest.class.getResourceAsStream("/AzureAccessToken.jwt")))
             .lines().collect(Collectors.joining());
 
         Principal actual = PrincipalTranslator.from(sample);
@@ -21,7 +21,7 @@ public class PrincipalTranslatorTest {
         Assert.assertNotNull(actual);
         Assert.assertEquals(actual.getId(), "1234567890");
         Assert.assertEquals(actual.getUsername(), "admin");
-        Assert.assertEquals(actual.getScope(), Arrays.asList("foo", "bar"));
+        Assert.assertEquals(actual.getScope(), Arrays.asList("User.Read", "Files.Read"));
         Assert.assertEquals(actual.getExpirationTime(), (Long) 1234567890000L);
     }
 

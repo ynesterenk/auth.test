@@ -17,9 +17,9 @@ final class PrincipalTranslator {
         JWTClaimsSet claims = parseJWT(token);
         principal.setId(claims.getSubject());
         principal.setUsername
-            (claims.getStringClaim("cognito:username"));
+            (claims.getStringClaim("name"));
         principal.setScope(
-            claims.getStringListClaim("cognito:groups"));
+            claims.getStringListClaim("groups"));
         principal.setExpirationTime(
             claims.getExpirationTime().getTime());
         return principal;
