@@ -1,4 +1,4 @@
-package jwt.infrastructure.azure.iam;
+package jwt.infrastructure.azure.rbac;
 
 import authorization.jwt.infrastructure.azure.rbac.AzureResourceManagerWrapper;
 import authorization.jwt.infrastructure.azure.rbac.RolePolicyRepository;

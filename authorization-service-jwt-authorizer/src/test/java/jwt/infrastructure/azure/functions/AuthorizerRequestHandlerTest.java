@@ -1,4 +1,4 @@
-package jwt.infrastructure.azure.lambda;
+package jwt.infrastructure.azure.functions;
 
 import authorization.jwt.core.Claims;
 import authorization.jwt.core.Jwt;
