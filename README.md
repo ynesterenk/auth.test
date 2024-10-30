@@ -1,4 +1,4 @@
-# AWS Api Gateway Authorization service
+# Azure Api Gateway Authorization service
 
 [![Build Status](https://travis-ci.org/vitalibo/api-gateway-authorization-service.svg?branch=master)](https://travis-ci.org/vitalibo/api-gateway-authorization-service)
 
