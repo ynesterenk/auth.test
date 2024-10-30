@@ -2,9 +2,9 @@
 
 [![Build Status](https://travis-ci.org/vitalibo/api-gateway-authorization-service.svg?branch=master)](https://travis-ci.org/vitalibo/api-gateway-authorization-service)
 
-The AWS API Gateway Authorization Service project provide simple OAuth 2.0 solution for AWS infrastructure.
+The Azure API Gateway Authorization Service project provide simple OAuth 2.0 solution for Azure infrastructure.
 It allow you don't care about manage and validate access to own resources, but enable focus on business values of resources.
-You actually only need describe IAM Policy for your resources and configure API Gateway custom authorizer, Amazon Cognito user pool care about maintain a user and group directory. 
+You actually only need describe IAM Policy for your resources and configure API Gateway custom authorizer, Azure AD user pool care about maintain a user and group directory. 
 
 ### Workflow
 
@@ -95,7 +95,7 @@ sequence_diagram.puml
 
 ### Build
 
-Ensure that you have installed Git, Java 8, Maven, AWS Cli and Docker.  
+Ensure that you have installed Git, Java 11, Maven, Azure Powershell and Docker.  
 Please clone this repository in first time and build the source codes use following command : 
 
 ```
@@ -106,7 +106,7 @@ in scope verify phase will be run unit tests and package jar files.
 
 ### Deploy
 
-The deployment of Authorization Services is fully based on AWS infrastructure and CloudFormation templates.
+The deployment of Authorization Services is fully based on Azure infrastructure and ARM templates.
 In folder `infrastructure` contains three stack templates:
 
 - `policy.json` - This template Create/Update AWS AIM subject. Namely deployment User, lambda execution Roles, authorizer Role and execute API Gateway Policy for default Cognito Groups.
