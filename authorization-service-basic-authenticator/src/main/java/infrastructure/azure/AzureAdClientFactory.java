@@ -15,7 +15,7 @@ public class AzureAdClientFactory {
     @Getter(lazy = true)
     private final ClientSecretCredential azureIdentityClient = createClientSecretCredential();
 
-    AzureAdClientFactory(String tenantId) {
+    public AzureAdClientFactory(String tenantId) {
         this(tenantId, System.getenv("AZURE_CLIENT_ID"), System.getenv("AZURE_CLIENT_SECRET"));
     }
 

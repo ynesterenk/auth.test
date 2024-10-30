@@ -21,14 +21,6 @@
       <version>2.43.0</version> <!-- Ensure you choose the correct version -->
      </dependency>
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-cognitoidp</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.microsoft.graph</groupId>
             <artifactId>microsoft-graph</artifactId>
             <version>5.12.0</version> <!-- Use the latest version available -->
@@ -36,7 +28,7 @@
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-identity</artifactId>
-            <version>1.5.6</version> <!-- Or the latest version available -->
+            <version>1.5.3</version> <!-- Or the latest version available -->
         </dependency>
 
         <dependency>
@@ -73,6 +65,12 @@
             <artifactId>azure-identity</artifactId>
             <version>1.5.3</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

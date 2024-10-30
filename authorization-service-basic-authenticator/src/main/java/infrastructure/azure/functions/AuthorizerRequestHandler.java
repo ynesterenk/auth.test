@@ -35,8 +35,7 @@ public class AuthorizerRequestHandler {
     @FunctionName("AuthorizerRequestHandler")
     public HttpResponseMessage run(
             @HttpTrigger(name = "req", methods = {HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION)
-            HttpRequestMessage<Optional<AuthorizerRequest>> request,
-            final ExecutionContext context) {
+            HttpRequestMessage<Optional<AuthorizerRequest>> request) {
 
         HttpBasicAuthenticator authenticator = factory.createHttpBasicAuthenticator();
         Principal principal = new Principal();

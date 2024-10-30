@@ -11,7 +11,6 @@ import infrastructure.azure.AzureFactory;
 import reactor.core.publisher.Mono;
 import shared.core.http.BasicAuthenticationException;
 import shared.infrastructure.azure.gateway.AuthorizerRequest;
-import shared.infrastructure.azure.gateway.AuthorizerResponse;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpRequestMessage;
 import com.microsoft.azure.functions.HttpResponseMessage;
@@ -41,8 +40,6 @@ public class AuthorizerRequestHandlerTest {
     private HttpBasicAuthenticator mockHttpBasicAuthenticator;
     @Mock
     private HttpRequestMessage<Optional<AuthorizerRequest>> mockRequest;
-    @Mock
-    private ExecutionContext mockContext;
     @Mock
     private TokenCredentialAuthProvider mockAuthProvider;
     @Mock
@@ -121,7 +118,7 @@ public class AuthorizerRequestHandlerTest {
 
 
         // Run the handler
-        HttpResponseMessage response = handler.run(mockRequest, mockContext);
+        HttpResponseMessage response = handler.run(mockRequest);
 
         Assert.assertNotNull(response);
       // Parse and verify the JSON response body
@@ -152,7 +149,7 @@ public class AuthorizerRequestHandlerTest {
         Mockito.when(mockFactory.createHttpBasicAuthenticator()).thenReturn(mockHttpBasicAuthenticator);
         Mockito.when(mockResponse.getBody()).thenReturn("Unauthorized: Basic authentication failed");
 
-        HttpResponseMessage response = handler.run(mockRequest, mockContext);
+        HttpResponseMessage response = handler.run(mockRequest);
 
         Assert.assertNotNull(response);
         Assert.assertEquals(response.getStatus(), HttpStatus.UNAUTHORIZED);
@@ -193,7 +190,7 @@ public class AuthorizerRequestHandlerTest {
                 .thenReturn(emptyRoleAssignmentsPage);
         Mockito.when(mockFactory.createHttpBasicAuthenticator()).thenReturn(mockHttpBasicAuthenticator);
 
-        HttpResponseMessage response = handler.run(mockRequest, mockContext);
+        HttpResponseMessage response = handler.run(mockRequest);
 
         Assert.assertNotNull(response);
         Assert.assertEquals(response.getStatus(), HttpStatus.FORBIDDEN);
@@ -206,7 +203,7 @@ public class AuthorizerRequestHandlerTest {
         Mockito.when(mockRequest.getHeaders()).thenReturn(Collections.singletonMap("Authorization", "Bearer mock_token"));
         Mockito.when(mockRequest.getBody()).thenReturn(Optional.of(request));
 
-        handler.run(mockRequest, mockContext);
+        handler.run(mockRequest);
     }
 
     private static AuthorizerRequest makeRequest() {

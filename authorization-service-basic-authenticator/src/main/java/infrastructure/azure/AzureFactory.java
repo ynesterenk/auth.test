@@ -22,7 +22,7 @@ public class AzureFactory {
         this(new AzureAdClientFactory(System.getenv("AZURE_TENANT_ID")), System.getenv());
     }
 
-    AzureFactory(AzureAdClientFactory azureFactory, Map<String, String> conf) {
+    public AzureFactory(AzureAdClientFactory azureFactory, Map<String, String> conf) {
         this.azureFactory = azureFactory;
         this.tenantId = conf.get("AZURE_TENANT_ID");
         this.clientId = conf.get("AZURE_CLIENT_ID");
