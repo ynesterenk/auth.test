@@ -1,6 +1,7 @@
 package shared;
 
-import com.amazonaws.util.json.Jackson;
+
+import shared.infrastructure.azure.gateway.JsonUtil;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,8 +13,8 @@ public class TestHelper {
     }
 
     public static String resourceAsJsonString(String resource) {
-        return Jackson.toJsonString(
-            Jackson.fromJsonString(
+        return JsonUtil.toJsonString(
+            JsonUtil.fromJsonString(
                 resourceAsString(resource), Object.class));
     }
 

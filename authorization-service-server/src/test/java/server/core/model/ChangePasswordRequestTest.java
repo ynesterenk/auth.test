@@ -1,16 +1,16 @@
 package server.core.model;
 
 import authorization.server.core.model.ChangePasswordRequest;
-import com.amazonaws.util.json.Jackson;
 import server.TestHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import shared.infrastructure.azure.gateway.JsonUtil;
 
 public class ChangePasswordRequestTest {
 
     @Test
     public void testFromJson() {
-        ChangePasswordRequest request = Jackson.fromJsonString(
+        ChangePasswordRequest request = JsonUtil.fromJsonString(
             TestHelper.resourceAsString("/ChangePasswordRequest.json"),
             ChangePasswordRequest.class);
 

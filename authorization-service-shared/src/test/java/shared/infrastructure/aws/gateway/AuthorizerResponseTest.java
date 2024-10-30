@@ -1,7 +1,5 @@
 package shared.infrastructure.aws.gateway;
 
-
-import com.amazonaws.util.json.Jackson;
 import com.azure.resourcemanager.authorization.models.Permission;
 import com.azure.resourcemanager.authorization.models.RoleDefinition;
 import shared.TestHelper;
@@ -9,6 +7,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import shared.infrastructure.azure.gateway.AuthorizerResponse;
 import org.mockito.Mockito;
+import shared.infrastructure.azure.gateway.JsonUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +43,7 @@ public class AuthorizerResponseTest {
         // Assertions to validate the response
         Assert.assertNotNull(response);
         Assert.assertEquals(
-                Jackson.toJsonString(response),
+                JsonUtil.toJsonString(response),
                 TestHelper.resourceAsJsonString("/ApiGatewayAuthorizerResponse.json"));
     }
 

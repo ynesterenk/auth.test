@@ -11,8 +11,6 @@
 
     <properties>
         <jdk.version>11</jdk.version>
-        <aws.java.sdk.version>1.11.123</aws.java.sdk.version>
-        <aws.lambda.core.version>1.1.0</aws.lambda.core.version>
         <slf4j.version>1.7.21</slf4j.version>
         <lombok.version>1.18.30</lombok.version>
         <nimbus.jose.jwt.version>4.30</nimbus.jose.jwt.version>
@@ -26,18 +24,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-java-sdk-bom</artifactId>
-                <version>${aws.java.sdk.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-lambda-java-core</artifactId>
-                <version>${aws.lambda.core.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.nimbusds</groupId>
                 <artifactId>nimbus-jose-jwt</artifactId>

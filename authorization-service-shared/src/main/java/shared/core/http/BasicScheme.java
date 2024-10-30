@@ -1,7 +1,5 @@
 package shared.core.http;
-
-import com.amazonaws.util.StringUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import java.util.Base64;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -20,7 +18,7 @@ public final class BasicScheme {
 
     public static Credentials decode(Map<String, String> headers) {
         String authorization = headers.get("Authorization");
-        if (StringUtils.isNullOrEmpty(authorization)) {
+        if (StringUtils.isEmpty(authorization)) {
             throw new BasicAuthenticationException(
                 "The authorization header can't be empty.");
         }

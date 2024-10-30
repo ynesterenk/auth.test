@@ -1,10 +1,10 @@
 package server.core.model;
 
 import authorization.server.core.model.ClientCredentialsResponse;
-import com.amazonaws.util.json.Jackson;
 import server.TestHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import shared.infrastructure.azure.gateway.JsonUtil;
 
 public class ClientCredentialsResponseTest {
 
@@ -15,7 +15,7 @@ public class ClientCredentialsResponseTest {
         response.setExpiresIn(1234567890L);
         response.setTokenType("Bearer");
 
-        String actual = Jackson.toJsonString(response);
+        String actual = JsonUtil.toJsonString(response);
 
         Assert.assertNotNull(actual);
         Assert.assertEquals(actual, TestHelper.resourceAsJsonString("/ClientCredentialsResponse.json"));

@@ -1,7 +1,6 @@
 package server.core.facade;
 
 import authorization.server.core.facade.ClientCredentialsFacade;
-import com.amazonaws.util.json.Jackson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import authorization.server.core.UserPool;
@@ -13,6 +12,7 @@ import com.microsoft.azure.functions.HttpRequestMessage;
 import lombok.extern.slf4j.Slf4j;
 import shared.core.validation.ErrorState;
 import shared.core.validation.Rule;
+import shared.infrastructure.azure.gateway.JsonUtil;
 import shared.infrastructure.azure.gateway.proxy.HttpHeaders;
 import shared.infrastructure.azure.gateway.proxy.HttpRequestTranslator;
 import com.microsoft.azure.functions.HttpResponseMessage;
@@ -112,7 +112,7 @@ public class ClientCredentialsFacadeTest {
 
         SetupMockResponse(mockRequest, HttpStatus.OK);
         // Convert ClientCredentialsRequest to JSON
-        String requestBody = Jackson.toJsonString(clientCredentialsRequest);
+        String requestBody = JsonUtil.toJsonString(clientCredentialsRequest);
 
         // Set method and body for the request
         Mockito.when(mockRequest.getHttpMethod()).thenReturn(HttpMethod.POST);
@@ -143,7 +143,7 @@ public class ClientCredentialsFacadeTest {
         SetupMockResponse(mockRequest, httpStatus);
         // Set method and body for the request
         Mockito.when(mockRequest.getHttpMethod()).thenReturn(HttpMethod.POST);
-        Mockito.when(mockRequest.getBody()).thenReturn(Optional.of(Jackson.toJsonString(makeClientCredentialsRequest())));
+        Mockito.when(mockRequest.getBody()).thenReturn(Optional.of(JsonUtil.toJsonString(makeClientCredentialsRequest())));
 
         // Set headers
         HashMap<String, String> headers = new HashMap<>();

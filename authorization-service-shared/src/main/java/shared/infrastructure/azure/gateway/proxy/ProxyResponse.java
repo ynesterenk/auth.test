@@ -1,8 +1,8 @@
 package shared.infrastructure.azure.gateway.proxy;
 
-import com.amazonaws.util.json.Jackson;
 import lombok.Data;
 import org.apache.http.HttpStatus;
+import shared.infrastructure.azure.gateway.JsonUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,8 +60,9 @@ public class ProxyResponse {
         public ProxyResponse build() {
             return new ProxyResponse(
                 isBase64Encoded, statusCode, headers,
-                body instanceof String ? (String) body : Jackson.toJsonString(body));
+                body instanceof String ? (String) body : JsonUtil.toJsonString(body));
         }
+
 
     }
 

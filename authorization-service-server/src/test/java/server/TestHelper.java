@@ -1,10 +1,10 @@
 package server;
 
-import com.amazonaws.util.json.Jackson;
 import com.microsoft.azure.functions.HttpRequestMessage;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import org.mockito.Mockito;
+import shared.infrastructure.azure.gateway.JsonUtil;
 import shared.infrastructure.azure.gateway.proxy.HttpError;
 import shared.infrastructure.azure.gateway.proxy.HttpHeaders;
 import shared.infrastructure.azure.gateway.proxy.HttpRequestTranslator;
@@ -22,8 +22,8 @@ public class TestHelper {
     }
 
     public static String resourceAsJsonString(String resource) {
-        return Jackson.toJsonString(
-            Jackson.fromJsonString(
+        return JsonUtil.toJsonString(
+            JsonUtil.fromJsonString(
                 resourceAsString(resource), Object.class));
     }
 

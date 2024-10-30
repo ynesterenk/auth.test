@@ -1,9 +1,9 @@
 package shared.infrastructure.aws.gateway.proxy;
 
-import com.amazonaws.util.json.Jackson;
 import shared.TestHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import shared.infrastructure.azure.gateway.JsonUtil;
 import shared.infrastructure.azure.gateway.proxy.ProxyRequest;
 
 import java.util.Map;
@@ -12,7 +12,7 @@ public class ProxyRequestTest {
 
     @Test
     public void testMake() {
-        ProxyRequest actual = Jackson.fromJsonString(
+        ProxyRequest actual = JsonUtil.fromJsonString(
             TestHelper.resourceAsString("/ApiGatewayProxyRequest.json"),
             ProxyRequest.class);
 

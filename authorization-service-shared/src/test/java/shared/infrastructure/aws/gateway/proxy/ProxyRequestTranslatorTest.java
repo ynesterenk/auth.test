@@ -1,9 +1,9 @@
 package shared.infrastructure.aws.gateway.proxy;
 
-import com.amazonaws.util.json.Jackson;
 import shared.TestHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import shared.infrastructure.azure.gateway.JsonUtil;
 import shared.infrastructure.azure.gateway.proxy.ProxyRequest;
 import shared.infrastructure.azure.gateway.proxy.ProxyRequestTranslator;
 
@@ -13,7 +13,7 @@ public class ProxyRequestTranslatorTest {
 
     @Test
     public void testFrom() {
-        ProxyRequest request = Jackson.fromJsonString(
+        ProxyRequest request = JsonUtil.fromJsonString(
             TestHelper.resourceAsString("/ApiGatewayProxyRequest.json"),
             ProxyRequest.class);
 
@@ -47,7 +47,7 @@ public class ProxyRequestTranslatorTest {
 
     @Test
     public void testNotNull() {
-        ProxyRequest request = Jackson.fromJsonString(
+        ProxyRequest request = JsonUtil.fromJsonString(
             "{}", ProxyRequest.class);
 
         ProxyRequest actual = ProxyRequestTranslator.ofNullable(request);

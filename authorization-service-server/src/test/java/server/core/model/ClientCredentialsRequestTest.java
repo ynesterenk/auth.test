@@ -1,16 +1,16 @@
 package server.core.model;
 
 import authorization.server.core.model.ClientCredentialsRequest;
-import com.amazonaws.util.json.Jackson;
 import server.TestHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import shared.infrastructure.azure.gateway.JsonUtil;
 
 public class ClientCredentialsRequestTest {
 
     @Test
     public void testFromJson() {
-        ClientCredentialsRequest request = Jackson.fromJsonString(
+        ClientCredentialsRequest request = JsonUtil.fromJsonString(
             TestHelper.resourceAsString("/ClientCredentialsRequest.json"),
             ClientCredentialsRequest.class);
 

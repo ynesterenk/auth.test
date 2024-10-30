@@ -1,7 +1,7 @@
 package shared.core.http;
 
-import com.amazonaws.util.json.Jackson;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import shared.infrastructure.azure.gateway.JsonUtil;
 import shared.infrastructure.azure.gateway.proxy.HttpRequestTranslator;
 import shared.infrastructure.azure.gateway.proxy.ProxyRequest;
 import lombok.SneakyThrows;
@@ -50,7 +50,7 @@ public class FormUrlencodedScheme {
             return request;
         }
 
-        request.setBody(Jackson.toJsonString(
+        request.setBody(JsonUtil.toJsonString(
             decode(request.getBody(), headers)));
         headers.put(HttpHeaders.CONTENT_TYPE, "application/json");
         return request;

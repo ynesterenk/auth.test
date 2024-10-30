@@ -1,16 +1,17 @@
 package shared.infrastructure.aws.gateway;
 
-import com.amazonaws.util.json.Jackson;
+
 import shared.TestHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import shared.infrastructure.azure.gateway.AuthorizerRequest;
+import shared.infrastructure.azure.gateway.JsonUtil;
 
 public class AuthorizerRequestTest {
 
     @Test
     public void testFromJson() {
-        AuthorizerRequest request = Jackson.fromJsonString(
+        AuthorizerRequest request = JsonUtil.fromJsonString(
             TestHelper.resourceAsString("/ApiGatewayAuthorizerRequest.json"),
             AuthorizerRequest.class);
 

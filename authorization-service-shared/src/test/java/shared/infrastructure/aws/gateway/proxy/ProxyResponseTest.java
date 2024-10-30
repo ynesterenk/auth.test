@@ -1,11 +1,11 @@
 package shared.infrastructure.aws.gateway.proxy;
 
-import com.amazonaws.util.json.Jackson;
 import shared.TestHelper;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import shared.infrastructure.azure.gateway.JsonUtil;
 import shared.infrastructure.azure.gateway.proxy.ProxyResponse;
 
 import java.util.Collections;
@@ -24,7 +24,7 @@ public class ProxyResponseTest {
 
         Assert.assertNotNull(actual);
         Assert.assertEquals(
-            Jackson.toJsonString(actual),
+            JsonUtil.toJsonString(actual),
             TestHelper.resourceAsJsonString("/ApiGatewayProxyResponse.json"));
     }
 

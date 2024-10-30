@@ -1,6 +1,6 @@
 package shared.core.http;
 
-import com.amazonaws.util.json.Jackson;
+import shared.infrastructure.azure.gateway.JsonUtil;
 import shared.infrastructure.azure.gateway.proxy.ProxyRequest;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -23,7 +23,7 @@ public class FormUrlencodedSchemeTest {
         Assert.assertNotNull(actual);
         Assert.assertEquals(actual.getHeaders().get(
             "Content-Type"), "application/json");
-        Assert.assertEquals(actual.getBody(), Jackson.toJsonString(
+        Assert.assertEquals(actual.getBody(), JsonUtil.toJsonString(
             map(entry("aa", "bb"), entry("cc", "dd"))));
     }
 
