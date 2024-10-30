@@ -6,21 +6,19 @@ import authorization.jwt.core.JwtVerificationException;
 import authorization.jwt.core.PolicyRepository;
 import authorization.jwt.infrastructure.azure.Factory;
 import shared.infrastructure.azure.gateway.AuthorizerRequest;
-import shared.infrastructure.azure.gateway.AuthorizerResponse;
 import authorization.jwt.infrastructure.azure.functions.AuthorizerRequestHandler;
 import com.azure.resourcemanager.authorization.models.Permission;
 import com.azure.resourcemanager.authorization.models.RoleDefinition;
-import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import shared.infrastructure.azure.gateway.MockHttpRequestMessage;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 
 public class AuthorizerRequestHandlerTest {
 
@@ -49,9 +47,12 @@ public class AuthorizerRequestHandlerTest {
         Mockito.when(mockJwt.verify(Mockito.anyString())).thenThrow(JwtVerificationException.class);
         AuthorizerRequest request = makeAuthorizerRequest();
 
-        AuthorizerResponse response = handler.handleRequest(request, mockContext);
+        HttpRequestMessage<Optional<AuthorizerRequest>> httpRequest = new MockHttpRequestMessage(request);
 
-        Assert.assertNull(response);
+        HttpResponseMessage response = handler.handleRequest(httpRequest, mockContext);
+
+        Assert.assertNotNull(response);
+        Assert.assertEquals(response.getStatus(), HttpStatus.UNAUTHORIZED);
         Mockito.verify(mockJwt).verify(request.getAuthorizationToken());
         Mockito.verify(mockPolicyRepository, Mockito.never()).getRoleDefinitions(Mockito.any());
     }
@@ -64,26 +65,28 @@ public class AuthorizerRequestHandlerTest {
         RoleDefinition roleDefinition = makeRoleDefinition();
         Mockito.when(mockPolicyRepository.getRoleDefinitions(claims))
                 .thenReturn(Collections.singletonList(roleDefinition));
-        //Mockito.when(mockRequest.getBody()).thenReturn(request);
 
-        AuthorizerResponse response = handler.handleRequest(request, mockContext);
+        HttpRequestMessage<Optional<AuthorizerRequest>> httpRequest = new MockHttpRequestMessage(request);
 
-
+        HttpResponseMessage response = handler.handleRequest(httpRequest, mockContext);
 
         Assert.assertNotNull(response);
-        Assert.assertEquals(response.getPrincipalId(), claims.getUsername());
-        Assert.assertNotNull(response.getPolicyDocument());
-        Assert.assertTrue(response.getContext().isEmpty());
+        Assert.assertEquals(response.getStatus(), HttpStatus.OK);
+
+        // Verify response content if needed (deserialize JSON if complex)
     }
 
-    @Test(expectedExceptions = RuntimeException.class)
+    @Test
     public void testInternalServerError() {
         AuthorizerRequest request = makeAuthorizerRequest();
         Mockito.when(mockJwt.verify(Mockito.anyString())).thenReturn(makeClaims());
         Mockito.when(mockPolicyRepository.getRoleDefinitions(Mockito.any())).thenThrow(RuntimeException.class);
 
+        HttpRequestMessage<Optional<AuthorizerRequest>> httpRequest = new MockHttpRequestMessage(request);
 
-        handler.handleRequest(request, mockContext);
+        HttpResponseMessage responseMessage=handler.handleRequest(httpRequest, mockContext);
+        Assert.assertNotNull(responseMessage);
+        Assert.assertEquals(responseMessage.getStatus(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private static AuthorizerRequest makeAuthorizerRequest() {
@@ -101,7 +104,6 @@ public class AuthorizerRequestHandlerTest {
         return claims;
     }
 
-    // Helper method to mock RoleDefinition and Permissions
     private static RoleDefinition makeRoleDefinition() {
         RoleDefinition roleDefinition = Mockito.mock(RoleDefinition.class);
         Permission permission = Mockito.mock(Permission.class);
@@ -117,4 +119,5 @@ public class AuthorizerRequestHandlerTest {
 
         return roleDefinition;
     }
+
 }

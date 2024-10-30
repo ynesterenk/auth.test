@@ -1,4 +1,4 @@
-package shared.infrastructure.aws.gateway;
+package shared.infrastructure.azure.gateway;
 
 import com.azure.resourcemanager.authorization.models.Permission;
 import com.azure.resourcemanager.authorization.models.RoleDefinition;

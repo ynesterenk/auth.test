@@ -1,4 +1,4 @@
-package shared.infrastructure.aws.gateway.proxy;
+package shared.infrastructure.azure.gateway.proxy;
 
 import shared.TestHelper;
 import shared.core.validation.ErrorState;

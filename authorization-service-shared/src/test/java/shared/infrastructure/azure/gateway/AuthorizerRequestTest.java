@@ -1,4 +1,4 @@
-package shared.infrastructure.aws.gateway;
+package shared.infrastructure.azure.gateway;
 
 
 import shared.TestHelper;

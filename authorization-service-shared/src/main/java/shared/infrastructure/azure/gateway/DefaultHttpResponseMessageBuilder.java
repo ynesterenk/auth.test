@@ -1,8 +1,7 @@
-package infrastructure.azure;
+package shared.infrastructure.azure.gateway;
 
-import com.azure.core.http.HttpHeaders;
+
 import com.microsoft.azure.functions.HttpResponseMessage;
-import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
 
 public class DefaultHttpResponseMessageBuilder implements HttpResponseMessage.Builder {

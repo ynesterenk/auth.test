@@ -1,27 +1,21 @@
 package infrastructure.azure.functions;
 
-import com.azure.identity.ClientSecretCredential;
-import com.azure.identity.ClientSecretCredentialBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.functions.*;
-import com.microsoft.graph.models.AppRoleAssignment;
-import com.microsoft.graph.requests.GraphServiceClient;
 import core.Principal;
 import infrastructure.azure.AzureAdClientFactory;
 import infrastructure.azure.AzureFactory;
-import infrastructure.azure.DefaultHttpResponseMessageBuilder;
-import infrastructure.azure.functions.AuthorizerRequestHandler;
 import org.junit.Ignore;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import shared.infrastructure.azure.gateway.AuthorizerRequest;
+import shared.infrastructure.azure.gateway.MockHttpRequestMessage;
 
-import java.net.URI;
-import java.time.OffsetDateTime;
+
 import java.util.*;
-import java.util.logging.Logger;
+
+import static shared.infrastructure.azure.gateway.MockHttpRequestMessage.GetBearerToken;
 
 public class AuthorizedRequestHandlerIntegrationTests {
 
@@ -80,17 +74,6 @@ public class AuthorizedRequestHandlerIntegrationTests {
     }
 
 
-        private static String GetBearerToken() {
-            String username = "admin";
-            String password = "password123";
-            String credentials = username + ":" + password;
-
-            // Encode credentials to Base64
-            String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
-
-            // Format as Basic Auth header
-            return "Basic " + encodedCredentials;
-        }
 
 
     private static Principal makePrincipal() {
@@ -102,51 +85,7 @@ public class AuthorizedRequestHandlerIntegrationTests {
         return principal;
     }
 
-    // Minimal implementation of HttpRequestMessage for real request handling
-    private static class MockHttpRequestMessage implements HttpRequestMessage<Optional<AuthorizerRequest>> {
-        private final AuthorizerRequest request;
 
-        public MockHttpRequestMessage(AuthorizerRequest request) {
-            this.request = request;
-        }
-
-        @Override
-        public URI getUri() {
-            return URI.create("https://your-function-url"); // Replace with actual URL
-        }
-
-        @Override
-        public HttpMethod getHttpMethod() {
-            return HttpMethod.POST;
-        }
-
-        @Override
-        public Optional<AuthorizerRequest> getBody() {
-            return Optional.of(request);
-        }
-
-        @Override
-        public Map<String, String> getHeaders() {
-            return Collections.singletonMap("Authorization", GetBearerToken());
-        }
-
-        @Override
-        public Map<String, String> getQueryParameters() {
-            return Map.of();
-        }
-
-        @Override
-        public HttpResponseMessage.Builder createResponseBuilder(HttpStatus status) {
-            return new DefaultHttpResponseMessageBuilder(status);
-        }
-
-        @Override
-        public HttpResponseMessage.Builder createResponseBuilder(HttpStatusType httpStatusType) {
-            return null;
-        }
-
-        // Implement other methods if necessary
-    }
 
 
 }
